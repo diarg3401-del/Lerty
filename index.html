@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LERTY | Elite Execution</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap');
+
+        :root {
+            --bg: #050505;
+            --card-bg: #0a0a0a;
+            --accent: #00f2ff; /* Lerty Cyan */
+            --accent-soft: rgba(0, 242, 255, 0.1);
+            --text: #ffffff;
+            --text-dim: #777;
+            --border: rgba(255, 255, 255, 0.05);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* --- AMBIENT GLOW --- */
+        .glow {
+            position: fixed;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, var(--accent-soft) 0%, transparent 70%);
+            z-index: -1;
+            top: -200px;
+            left: 50%;
+            transform: translateX(-50%);
+            filter: blur(100px);
+            pointer-events: none;
+        }
+
+        /* --- NAVBAR --- */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 30px 10%;
+            border-bottom: 1px solid var(--border);
+            backdrop-filter: blur(20px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(5, 5, 5, 0.8);
+        }
+
+        .logo { font-size: 24px; font-weight: 900; letter-spacing: -1.5px; cursor: pointer; }
+        .logo span { color: var(--accent); }
+
+        .nav-links { display: flex; gap: 40px; }
+        .nav-links a { 
+            color: var(--text-dim); 
+            text-decoration: none; 
+            font-size: 14px; 
+            transition: 0.3s; 
+            font-weight: 600; 
+            cursor: pointer;
+        }
+        .nav-links a.active { color: var(--accent); text-shadow: 0 0 10px var(--accent-soft); }
+        .nav-links a:hover { color: var(--accent); }
+
+        /* --- SECTION LOGIC --- */
+        .page-section {
+            display: none;
+            animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        .page-section.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- HERO --- */
+        .hero {
+            height: 70vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0 10%;
+        }
+
+        .status-badge {
+            background: var(--accent-soft);
+            color: var(--accent);
+            padding: 8px 18px;
+            border-radius: 30px;
+            font-size: 11px;
+            font-weight: 900;
+            margin-bottom: 25px;
+            border: 1px solid rgba(0, 242, 255, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .status-dot { width: 8px; height: 8px; background: var(--accent); border-radius: 50%; box-shadow: 0 0 8px var(--accent); animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+
+        h1 { font-size: clamp(3.5rem, 10vw, 6.5rem); font-weight: 900; line-height: 0.85; margin-bottom: 25px; letter-spacing: -4px; }
+        h1 span { color: var(--accent); }
+
+        p.hero-subtext { font-size: 18px; color: var(--text-dim); max-width: 550px; margin-bottom: 45px; line-height: 1.5; }
+
+        .btn-container { display: flex; gap: 20px; }
+
+        .btn {
+            padding: 18px 45px;
+            border-radius: 12px;
+            font-weight: 800;
+            text-decoration: none;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            font-size: 15px;
+            letter-spacing: 0.5px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn.primary { background: var(--accent); color: #000; box-shadow: 0 15px 35px -10px var(--accent-soft); }
+        .btn.primary:hover { transform: translateY(-5px); box-shadow: 0 20px 45px -5px var(--accent-soft); }
+        .btn.secondary { border: 1px solid var(--border); color: white; background: rgba(255, 255, 255, 0.03); }
+
+        /* --- SCRIPT HUB --- */
+        .hub-header { text-align: center; padding: 60px 10% 20px; }
+        .hub-header h2 { font-size: 45px; letter-spacing: -2px; }
+        .hub-header span { color: var(--accent); }
+
+        .script-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            padding: 40px 10% 100px;
+        }
+
+        .script-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 30px;
+            border-radius: 20px;
+            transition: 0.3s;
+        }
+
+        .script-card:hover { border-color: var(--accent); transform: scale(1.02); }
+        .script-card h3 { margin-bottom: 10px; color: #fff; }
+        .script-card p { font-size: 14px; color: var(--text-dim); margin-bottom: 20px; }
+
+        .copy-btn {
+            background: var(--accent-soft);
+            color: var(--accent);
+            border: 1px solid var(--accent);
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 12px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .copy-btn:active { transform: scale(0.95); }
+
+    </style>
+</head>
+<body>
+
+    <div class="glow"></div>
+
+    <nav>
+        <div class="logo" onclick="showSection('home')">LERTY<span>.NOW</span></div>
+        <div class="nav-links">
+            <a id="nav-home" class="active" onclick="showSection('home')">Home</a>
+            <a id="nav-scripts" onclick="showSection('scripts')">Script Hub</a>
+            <a href="https://discord.gg/yourlink" target="_blank">Discord</a>
+        </div>
+    </nav>
+
+    <div id="home" class="page-section active">
+        <header class="hero">
+            <div class="status-badge">
+                <div class="status-dot"></div>
+                Lerty V1.0 - Operational
+            </div>
+            <h1>THE NEW<br><span>STANDARD.</span></h1>
+            <p class="hero-subtext">Unrivaled injection speeds, multi-level security, and a built-in script hub. Elevate your experience with Lerty.</p>
+            
+            <div class="btn-container">
+                <a href="https://raw.githubusercontent.com/diarg3401-del/Lerty/refs/heads/main/Lerty.zip" class="btn primary">Download Lerty.zip</a>
+                <button class="btn secondary" onclick="showSection('scripts')">Browse Scripts</button>
+            </div>
+        </header>
+
+        <section style="display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:25px; padding: 0 10% 100px;">
+            <div style="background:var(--card-bg); border:1px solid var(--border); padding:40px; border-radius:24px;">
+                <h3>Hyper-Fast</h3>
+                <p style="color:#666; margin-top:10px;">Our custom-built engine handles execution in milliseconds.</p>
+            </div>
+            <div style="background:var(--card-bg); border:1px solid var(--border); padding:40px; border-radius:24px;">
+                <h3>99% Stability</h3>
+                <p style="color:#666; margin-top:10px;">Engineered to prevent crashes during intensive script loads.</p>
+            </div>
+        </section>
+    </div>
+
+    <div id="scripts" class="page-section">
+        <div class="hub-header">
+            <h2>SCRIPT <span>HUB</span></h2>
+            <p style="color:var(--text-dim);">The most powerful scripts, optimized for Lerty.</p>
+        </div>
+
+        <div class="script-grid">
+            <div class="script-card">
+                <h3>Universal ESP</h3>
+                <p>See players through walls, including boxes, names, and health bars.</p>
+                <button class="copy-btn" onclick="copyScript('loadstring(game:HttpGet(\'https://raw.githubusercontent.com/Example/ESP.lua\'))()')">Copy Loadstring</button>
+            </div>
+
+            <div class="script-card">
+                <h3>Infinite Yield</h3>
+                <p>The ultimate admin command script for every experience.</p>
+                <button class="copy-btn" onclick="copyScript('loadstring(game:HttpGet(\'https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source\'))()')">Copy Loadstring</button>
+            </div>
+
+            <div class="script-card">
+                <h3>Aimbot Core</h3>
+                <p>Advanced prediction and silent aim module with customizable FOV.</p>
+                <button class="copy-btn" onclick="copyScript('-- Aimbot Logic Here')">Copy Loadstring</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // TAB SWITCHING LOGIC
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.page-section').forEach(section => {
+                section.classList.remove('active');
+            });
+
+            // Show target section
+            document.getElementById(sectionId).classList.add('active');
+
+            // Update Nav Highlighting
+            document.querySelectorAll('.nav-links a').forEach(link => link.classList.remove('active'));
+            if(sectionId === 'home') document.getElementById('nav-home').classList.add('active');
+            if(sectionId === 'scripts') document.getElementById('nav-scripts').classList.add('active');
+
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        // COPY TO CLIPBOARD LOGIC
+        function copyScript(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Script copied to clipboard!');
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+            });
+        }
+    </script>
+
+</body>
+</html>
